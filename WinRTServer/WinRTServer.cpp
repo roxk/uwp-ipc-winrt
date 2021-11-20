@@ -18,6 +18,7 @@ namespace ABI {
     {
         class Server WrlFinal : public RuntimeClass<IServer>
         {
+            AgileEventSource<ITypedEventHandler<IInspectable*, IInspectable*>> _initialized;
             InspectableClass(RuntimeClass_WinRTServer_Server, TrustLevel::BaseTrust)
         public:
             HRESULT RuntimeClassInitialize()
@@ -29,7 +30,16 @@ namespace ABI {
             STDMETHODIMP Initialize() override
             {
                 OutputDebugString(L"hi\n");
-                return S_OK;
+                return _initialized.InvokeAll(this, nullptr);
+            }
+
+            STDMETHODIMP add_Initialized(_In_ ITypedEventHandler<IInspectable*, IInspectable*>* handler, _Out_ EventRegistrationToken* token) override
+            {
+                return _initialized.Add(handler, token);
+            }
+            STDMETHODIMP remove_Initialized(_In_ EventRegistrationToken token) override
+            {
+                return _initialized.Remove(token);
             }
         };
 

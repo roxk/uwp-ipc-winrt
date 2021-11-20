@@ -59,6 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\x64\Debug\WinRTServer\WinRTServer.exe" />
-    <CopyFileToFolders Include="..\x64\Debug\WinRTServer\WinRTServer.winmd" />
+    <CopyFileToFolders Include="..\$(Platform)\$(Configuration)\WinRTServer\WinRTServer.winmd" />
   </ItemGroup>
 </Project>

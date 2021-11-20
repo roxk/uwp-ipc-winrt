@@ -26,12 +26,7 @@ public:
 
 int CALLBACK WinMain(_In_  HINSTANCE, _In_  HINSTANCE, _In_  LPSTR, _In_  int)
 {
-    while (true)
-    {
-        Sleep(1);
-    }
-    return 1;
-    /*Microsoft::WRL::Wrappers::RoInitializeWrapper roInit(RO_INIT_MULTITHREADED);
+    Microsoft::WRL::Wrappers::RoInitializeWrapper roInit(RO_INIT_MULTITHREADED);
     if (FAILED(roInit)) return 0;
 
     ComPtr<ICoreApplication> coreApp;
@@ -42,5 +37,5 @@ int CALLBACK WinMain(_In_  HINSTANCE, _In_  HINSTANCE, _In_  LPSTR, _In_  int)
 
     coreApp->RunWithActivationFactories(activationFactory.Get());
 
-    return 0;*/
+    return 0;
 }

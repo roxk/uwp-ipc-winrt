@@ -2,6 +2,7 @@
 #include "MainPage.h"
 #include "MainPage.g.cpp"
 #include <winrt/WinRTServer.h>
+#include <winrt/Windows.ApplicationModel.h>
 
 using namespace winrt;
 using namespace Windows::UI::Xaml;
@@ -27,8 +28,11 @@ namespace winrt::UWPIPCWinRT::implementation
     void MainPage::ClickHandler(IInspectable const&, RoutedEventArgs const&)
     {
         myButton().Content(box_value(L"Clicked"));
-        Server server;
-        server.Initialize();
+        Windows::ApplicationModel::FullTrustProcessLauncher::LaunchFullTrustProcessForCurrentAppAsync();
         auto i = 0;
+    }
+    void MainPage::OnInitialized(Windows::Foundation::IInspectable const& sender, Windows::Foundation::IInspectable const& args)
+    {
+        OutputDebugString(L"Initialized callback\n");
     }
 }
