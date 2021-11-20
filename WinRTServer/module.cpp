@@ -1,45 +1,30 @@
 ﻿#include "pch.h"
-#include <wrl\module.h>
-#include <roapi.h>
-#include <Windows.ApplicationModel.Core.h>
 #include <Server.h>
+#include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.ApplicationModel.h>
+#include <winrt/Windows.ApplicationModel.Core.h>
 
-using namespace ABI::Windows::ApplicationModel::Core;
-using namespace ABI::Windows::Foundation;
-using namespace Microsoft::WRL;
-using namespace Microsoft::WRL::Wrappers;
+using namespace winrt;
 
 int32_t __stdcall WINRT_GetActivationFactory(void* classId, void** factory) noexcept;
 
-class ExeServerGetActivationFactory WrlFinal : public RuntimeClass<IGetActivationFactory, FtmBase>
+struct GetActivationFactoryServer : implements<GetActivationFactoryServer, Windows::Foundation::IGetActivationFactory>
 {
-public:
-    STDMETHODIMP GetActivationFactory(_In_ HSTRING activatableClassId, _COM_Outptr_ IInspectable** factory)
+    IInspectable GetActivationFactory(hstring activatableClassId)
     {
-        *factory = nullptr;
-        ComPtr<IActivationFactory> activationFactory;
-        HRESULT hr = WINRT_GetActivationFactory(activatableClassId, &activationFactory);
-        if (SUCCEEDED(hr))
+        com_ptr<Windows::Foundation::IActivationFactory> factory;
+        if (auto result = WINRT_GetActivationFactory(get_abi(activatableClassId), reinterpret_cast<void**>(factory.put())); result != 0)
         {
-            *factory = activationFactory.Detach();
+            throw hresult_error(result);
         }
-        return hr;
+        return factory.as<IInspectable>();
     }
 };
 
 int CALLBACK WinMain(_In_  HINSTANCE, _In_  HINSTANCE, _In_  LPSTR, _In_  int)
 {
-    Microsoft::WRL::Wrappers::RoInitializeWrapper roInit(RO_INIT_MULTITHREADED);
-    if (FAILED(roInit)) return 0;
-
-    ComPtr<ICoreApplication> coreApp;
-    if (FAILED(GetActivationFactory(HStringReference(RuntimeClass_Windows_ApplicationModel_Core_CoreApplication).Get(), &coreApp))) return 0;
-
-    auto activationFactory = Make<ExeServerGetActivationFactory>();
-    if (!activationFactory) return 0;
-
-    winrt::WinRTServer::Server server;
-    coreApp->RunWithActivationFactories(activationFactory.Get());
-
+    init_apartment();
+    auto server = make<GetActivationFactoryServer>();
+    Windows::ApplicationModel::Core::CoreApplication::RunWithActivationFactories(server);
     return 0;
 }
