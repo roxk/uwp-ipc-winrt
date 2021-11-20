@@ -1,0 +1,9 @@
+namespace WinRTServer
+{
+	runtimeclass Server
+	{
+		Server();
+		void Initialize();
+		event Windows.Foundation.TypedEventHandler<IInspectable, IInspectable> Initialized;
+	}
+}

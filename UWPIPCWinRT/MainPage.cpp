@@ -29,7 +29,6 @@ namespace winrt::UWPIPCWinRT::implementation
     {
         myButton().Content(box_value(L"Clicked"));
         Windows::ApplicationModel::FullTrustProcessLauncher::LaunchFullTrustProcessForCurrentAppAsync();
-        auto i = 0;
     }
     void MainPage::OnInitialized(Windows::Foundation::IInspectable const& sender, Windows::Foundation::IInspectable const& args)
     {

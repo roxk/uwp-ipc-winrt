@@ -1,12 +1,15 @@
-﻿#include <wrl\module.h>
+﻿#include "pch.h"
+#include <wrl\module.h>
 #include <roapi.h>
 #include <Windows.ApplicationModel.Core.h>
-#include <WinRTServer.h>
+#include <Server.h>
 
 using namespace ABI::Windows::ApplicationModel::Core;
 using namespace ABI::Windows::Foundation;
 using namespace Microsoft::WRL;
 using namespace Microsoft::WRL::Wrappers;
+
+int32_t __stdcall WINRT_GetActivationFactory(void* classId, void** factory) noexcept;
 
 class ExeServerGetActivationFactory WrlFinal : public RuntimeClass<IGetActivationFactory, FtmBase>
 {
@@ -15,7 +18,7 @@ public:
     {
         *factory = nullptr;
         ComPtr<IActivationFactory> activationFactory;
-        HRESULT hr = Module<OutOfProc>::GetModule().GetActivationFactory(activatableClassId, &activationFactory);
+        HRESULT hr = WINRT_GetActivationFactory(activatableClassId, &activationFactory);
         if (SUCCEEDED(hr))
         {
             *factory = activationFactory.Detach();
@@ -35,6 +38,7 @@ int CALLBACK WinMain(_In_  HINSTANCE, _In_  HINSTANCE, _In_  LPSTR, _In_  int)
     auto activationFactory = Make<ExeServerGetActivationFactory>();
     if (!activationFactory) return 0;
 
+    winrt::WinRTServer::Server server;
     coreApp->RunWithActivationFactories(activationFactory.Get());
 
     return 0;
